@@ -1,6 +1,6 @@
 # Hello Rails!
 
-## [View this assignment on GitHub](https://github.com/saasbook/hw-hello-rails)
+## [View this assignment on GitHub](https://github.com/Service-Design-Studio/hw-hello-rails)
 
 In previous assignments, you created and deployed a simple Hangperson
 game using the Ruby-based Sinatra framework, and in the subsequent
@@ -43,7 +43,7 @@ including using the debugger to interactively track down bugs and
 inspect application state, such as the parameters supplied to a
 controller action
 
-5. Deploy the app to the public cloud, in this case using Heroku's
+5. Deploy the app to the public cloud, in this case using Google Cloud's
 Platform-as-a-Service (PaaS) facility
 
 ## Homework Parts
