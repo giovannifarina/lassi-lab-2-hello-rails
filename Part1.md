@@ -16,8 +16,16 @@ install bundler --version=1.17.3 --no-document`
 to install it.  (Normally, though, installing the `rails` gem will
 also install `bundler`.)
 
-Finally, the `heroku` [command line tool](https://devcenter.heroku.com/articles/heroku-cli) should be installed in your development
-eenvironment; say `heroku -v` to verify this fact.  
+You also need to run the following commands on the terminal:
+
+```
+sudo apt-get update
+sudo apt-get install libpq-dev 
+sudo apt-get install python3-distutils
+```
+
+Finally, the `gcloud` [command line tool](https://cloud.google.com/sdk/docs/install) should be installed in your development
+eenvironment; say `gcloud -v` to verify this fact.  
 
 ## Create a new Rails app
 
