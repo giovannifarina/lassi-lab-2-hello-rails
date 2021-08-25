@@ -1,5 +1,7 @@
 # Part 4: Deploy to the cloud, including the production database
 
+## Preparation
+
 In the Sinatra Hangperson assignment, you already learned how to
 deploy a Sinatra app to Heroku.
 Deploying a Rails app is very similar, but a few extra steps are
@@ -13,8 +15,7 @@ certain environments.  Rails apps examine the environment variable
 `RAILS_ENV` to determine which environment they're running in, to make
 decisions such as which database to use (`config/database.yml`) and
 which gems to use.
-Google Cloud
-sets this variable to `production` at deploy time; running tests sets
+Google Cloud sets this variable to `production` at deploy time; running tests sets
 it to `test`; while you're running your app interactively, it's set to
 `development`. 
 
@@ -24,14 +25,11 @@ your Gemfile.  First, add this:
 ```
 group :production do
   gem 'pg', '~> 0.21' # for gcloud deployment
-  gem 'appengine'
 end
 ```
 
 (If there is already a `group :production` in your Gemfile, just add
-those lines to it.)  `appengine` is a [gem](https://github.com/GoogleCloudPlatform/appengine-ruby) that has some
-additional best-practices for deployment that Google Cloud recommends
-(Rails 5 and later apps don't need it).
+those lines to it.)  
 
 Second, find the line that specifies the `sqlite3` gem, and tell the
 Gemfile that that gem should **not** be used in production, by moving
@@ -43,8 +41,7 @@ group :development, :test do
 end
 ```
 
-This second step is necessary because Heroku is set up in such a way
-that the `sqlite3` gem simply won't work, so we have to make sure it
+This second step is necessary because many cloud hosting services are set up in such a way that the `sqlite3` gem simply won't work, so we have to make sure it
 is _only_ loaded in development and test environments but _not_ production.
 
 As always when you modify your Gemfile, re-run `bundle install` and
@@ -55,88 +52,243 @@ them.  Heroku will use `Gemfile.lock` to install the matching versions
 of the gems when you deploy.
 
 **Don't we have to modify `config/database.yml` as well?**  You'd
-think so, but the way Heroku works, it actually _ignores_
+think so, but the way Google Cloud works, it actually _ignores_
 `database.yml` and forces Rails apps to use Postgres.  So modifying
-the `production:` section of `database.yml` won't have any effect on Heroku.
+the `production:` section of `database.yml` won't have any effect on Google Cloud.
 
 The first time you
-use the gcloud command line tool, you will have to authenticate yourself using your gcloud
-username and password, by saying `gcloud init`. During this initalization, choose to create a new project. Or you can also run the following:
+use the gcloud command line tool, you will have to authenticate yourself using your gcloud username and password, by saying `gcloud init`. During this initalization, choose to create a new project. Or you can also run the following:
 
 ```
 gcloud projects create [project-id]
 gcloud config set project [project-id]
 ```
 
-At this point, having committed all changes locally, you should be ready to push your
-repository to gcloud for deployment.
+Make sure that billing is enabled for your Cloud project. [Check whether your project is linked to a billing account](https://cloud.google.com/billing/docs/how-to/modify-project). Remember to use the billing account that contains your given credits. 
 
-Finally, you need to create a new app "container" on Google Cloud to which
-you can deploy.   The easiest way to do this is to use the 
-gcloud command line tool from within the app's root directory; type 
+Enable the Cloud Run, Cloud SQL, Cloud Build, Secret Manager, and Compute Engine APIs. [Enable the API](https://console.cloud.google.com/flows/enableapi?apiid=run.googleapis.com,sql-component.googleapis.com,sqladmin.googleapis.com,compute.googleapis.com,cloudbuild.googleapis.com,secretmanager.googleapis.com).
+
+
+## Set up a Cloud SQL for PostgreSQL Instance
+
+Follow the steps to create PostgreSQL instance.
+1. In the Cloud Console, go to the Cloud SQL Instances page. [CloudSQL Instance page](https://console.cloud.google.com/sql/instances?project=_).
+1. Click Create Instance.
+1. Click Choose PostgreSQL.
+1. In the Instance ID field, enter a name for the instance (`INSTANCE_NAME`).
+1. In the Password field, enter a password for the postgres user.
+1. Choose Singapore for region and "Single Zone" for Zone availability.
+1. Use the default values for the other fields.
+1. Click Create Instance.
+
+Note that it may take sometime for the instance create to complete.
+
+## Create a Database
+Follow the steps below to create a new database.
+1. In the Cloud Console, go to the Cloud SQL Instances page. [Go to the Cloud SQL Instances page](https://console.cloud.google.com/sql/instances?project=_).
+1. Select the `INSTANCE_NAME` instance.
+1. Go to the Databases tab.
+1. Click Create database.
+1. In the Database name dialog, enter `DATABASE_NAME`.
+1. Click Create.
+
+## Create a User
+Generate a random password for the database user, and write it to a file called `dbpassword`:
 ```
-gcloud app create
+cat /dev/urandom | LC_ALL=C tr -dc '[:alpha:]'| fold -w 50 | head -n1 > dbpassword
 ```
 
-The created app container will then be
-associated with your app. 
+1. In the Cloud Console, go to the Cloud SQL Instances page. [Go to the Cloud SQL Instances page](https://console.cloud.google.com/sql/instances?project=_).
+1. Select the `INSTANCE_NAME` instance.
+1. Go to the Users tab.
+1. Click Add User Account.
+1. Under the Built-in Authentication dialog:
+    1. Enter the user name `DATABASE_USERNAME`.
+    1. Enter the content of the `dbpassword` file as the password `PASSWORD`.
+1. Click Add.
 
-OK, the moment of truth has arrived.  `gcloud app deploy` to deploy your code to Google Cloud.  Google Cloud will try to
-install all the Gems in your gemfile and fire up your app!  You should
-be able to view your app at `https://your-app-name.appspot.com`!
-Right?
+## Set up a Cloud Storage bucket
 
-Almost.  If you try this, you'll see an error. It complains that it does not have `app.yml` file. So let's create this file in the root folder.
+1. In the Cloud Console, go to the Cloud Storage Browser page. [Go to Browser](https://console.cloud.google.com/storage/browser).
+1. Click Create bucket.
+1. On the Create a bucket page, enter your bucket information. To go to the next step, click Continue.
+    1. For Name your bucket, enter a name that meets the bucket naming requirements.
+    1. Select "Region" for Location Type, and choose "asia-southeast1". This will be referred to as `MEDIA_BUCKET` in subsequent steps.
+    1. For Choose a default storage class for your data, select the following: Standard.
+    1. For Choose how to control access to objects, select Uniform for an Access control option. Make sure you **uncheck** public access prevention.
+1. Click Create.
+
+After creating a bucket, to make the uploaded images public, change the permissions of image objects to be readable by everyone.
+1. In the Google Cloud Console, go to the Cloud Storage Browser page. [Go to Browser](https://console.cloud.google.com/storage/browser).
+1. In the list of buckets, click on the name of the bucket that you want to make public.
+1. Select the Permissions tab near the top of the page.
+1. Click the Add members button.
+1. The Add members dialog box appears.
+1. In the New members field, enter `allUsers`.
+1. In the Select a role drop down, select the Cloud Storage sub-menu, and click the `Storage Object Viewer` option.
+1. Click Save.
+
+## Setting up secret.yml
+
+Open the file `config/secret.yml` and add the following line starting with `gcp`. Copy the password you have generated and previously stored in `dbpassword` into the value after `db_password`.
 
 ```
-entrypoint: bundle exec rackup --port $PORT
-env: flex
-runtime: ruby
-
-automatic_scaling:
-  min_num_instances: 1
-  max_num_instances: 2
-
-env_variables:
-  SECRET_KEY_BASE: [SECRET_KEY]
+secret_key_base: GENERATED_VALUE
+gcp:
+  db_password: PASSWORD
 ```
 
-When you deploy a Rails app in the production environment, set the environment variable SECRET_KEY_BASE to a secret key that is used to protect user session data. This environment variable is read in the config/secrets.yml file. Now, we need to do the following:
-1. Generate a new secret key
+## Connect Rails app to production database and storage
+
+This tutorial uses a PostgreSQL instance as the production database and Cloud Storage as the storage backend. For Rails to connect to the newly created database and storage bucket, you need to specify all the information needed to access them in the `.env` file. Our `.env` file contains the configuration for the application environment variables. The application will read this file using the dotenv gem. 
+
+1. To configure the Rails app to connect with the database and storage bucket, open the `.env` file.
+1. Modify the `.env` file configuration to the following:
+  ```
+  PRODUCTION_DB_NAME: DATABASE_NAME
+  PRODUCTION_DB_USERNAME: DATABASE_USERNAME
+  CLOUD_SQL_CONNECTION_NAME: PROJECT_ID:REGION:INSTANCE_NAME
+  GOOGLE_PROJECT_ID: PROJECT_ID
+  STORAGE_BUCKET_NAME: PROJECT_ID-MEDIA_BUCKET
+  ```
+
+## Grant Cloud Build access to Cloud SQL
+1. In the Cloud Console, go to the Identity and Access Management page. [Go to the Identity and Access Management page](https://console.cloud.google.com/iam-admin/iam?project=_).
+1. To edit the entry for `PROJECTNUM@cloudbuild.gserviceaccount.com` member, click create Edit Member.
+1. Click Add another role
+1. In the Select a role dialog, select `Cloud SQL Client`.
+1. Click Save
+
+## Dockerfile
+
+Create a `Dockerfile` in the root directory containing the following.
+```
+# Use the official lightweight Ruby image.
+# https://hub.docker.com/_/ruby
+FROM ruby:2.6.6 AS rails-toolbox
+
+RUN (curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | apt-key add -) && \
+    echo "deb https://deb.nodesource.com/node_14.x buster main"      > /etc/apt/sources.list.d/nodesource.list && \
+    apt-get update && apt-get install -y nodejs lsb-release
+
+RUN (curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -) && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && apt-get install -y yarn
+
+# Install production dependencies.
+WORKDIR /app
+
+COPY Gemfile Gemfile.lock ./
+
+RUN apt-get update && apt-get install -y libpq-dev && apt-get install -y python3-distutils
+RUN gem install bundler && \
+    bundle config set --local deployment 'true' && \
+    bundle config set --local without 'development test' && \
+    bundle install
+
+# Copy local code to the container image.
+COPY . /app
+
+ENV RAILS_ENV=production
+ENV RAILS_SERVE_STATIC_FILES=true
+# Redirect Rails log to STDOUT for Cloud Run to capture
+ENV RAILS_LOG_TO_STDOUT=true
+ENV SECRET_KEY_BASE=<YOUR SECRET_KEY_BASE>
+
+# pre-compile Rails assets with master key
+RUN bundle exec rake assets:precompile
+
+
+ENV RAILS_ENV=production
+
+RUN bundle exec rake db:create
+RUN bundle exec rake db:migrate
+RUN bundle exec rake db:seed
+
+EXPOSE 8080
+CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "8080"]
+```
+
+You will need to modify the value for the environment variable `SECRET_KEY_BASE`. When you deploy a Rails app in the production environment, set the environment variable SECRET_KEY_BASE to a secret key that is used to protect user session data. This environment variable is read in the `config/secrets.yml` file. Now, we need to do the following:
+1. Generate a new secret key. It should output something like a long random string.
     ```
     bundle exec rake secret
     ```
-1. Copy the generated secret key and paste it inside `app.yml` file under `SECRET_KEY_BASE`. 
+1. Copy the generated secret key and paste it inside `Dockerfile` file under `<YOUR_SECRET_KEY_BASE>`. 
 
-Before we move one, we need to make sure the billing is linked to the project. Go to [Google Cloud Platform console](https://console.cloud.google.com/appengine/start). On the top, select your project-id which you created then click Billing from the left Menu. Make sure the project is linked to your billing account.
+## Creating YAML for Cloud Run
 
-You can now try to deploy again:
+Create a new file called `cloudbuild.yaml` at the root directory. Copy and paste the following.
 
 ```
-gcloud app deploy
+# [START cloudrun_rails_cloudbuild]
+steps:
+  - id: "build image"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: 'bash'
+    args: ["-c", "docker build -t gcr.io/${PROJECT_ID}/${_SERVICE_NAME} . "]
+
+  - id: "push image"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"]
+
+  - id: "apply migrations"
+    name: "gcr.io/google-appengine/exec-wrapper"
+    entrypoint: "bash"
+    args:
+      [
+        "-c",
+        "/buildstep/execute.sh -i gcr.io/${PROJECT_ID}/${_SERVICE_NAME} -s ${PROJECT_ID}:${_REGION}:${_INSTANCE_NAME} -- bundle exec rake db:migrate"
+      ]
+  - id: "run deploy"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      [
+        "run", "deploy",
+        "${_SERVICE_NAME}",
+        "--platform", "managed",
+        "--region", "${_REGION}",
+        "--image", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"
+      ]
+
+substitutions:
+  _REGION: [YOUR REGION ]
+  _SERVICE_NAME: [YOUR SERVICE]
+  _INSTANCE_NAME: [CLOUD SQL INSTANCE NAME]
+
+images:
+  - "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"
+# [END cloudrun_rails_cloudbuild]
+
 ```
 
-Creating the database locally required 2 steps: first we ran the
-initial migration to create the `movies` table (schema), then we
-seeded the database with some initial data.  We must do these 2 steps
-on Google Cloud as well. To do this, we need to create PostgreSQL instance in Google Cloud.
+You need to modify the following:
+- Replace `[YOUR REGION]` with `asia-southeast1` or your previous chosen region.
+- Replace `[YOUR SERVICE]` with the name of you want to set for your Cloud Run service, e.g. `rails-hangperson`
+- Replace `[CLOUD SQL INSTANCE NAME]` with your Cloud SQL instance name you previously created.
 
-1. Before you can begin using the Cloud SQL you must enable the Admin API. You can enable the API by using the following command:
-    ```
-    gcloud services enable sqladmin.googleapis.com
-    ```
-1. Go to Google Cloud Platform to create a new SQL instances [https://console.cloud.google.com/sql/instances](https://console.cloud.google.com/sql/instances). Choose PostgreSQL database and click ENABLE API to enable Compute Engine API to create an instance. Or you can also create the instance from the terminal by running the following:
-    ```
-    gcloud sql instances create postgres-dbase --database-version POSTGRES_12 --cpu=1 --memory=3840MiB --region=asia-southeast1
-    ```
-    This create an instance with the name `postgres-dbase` as a PostgreSQL version 12 database. 
-1. Create a database in the instance. You can this database `movies` for example.
-1. Set the postgres user password for the instance using the following command. Replace `some-password` with your generated random password. 
-    ```
-    gcloud sql users set-password postgres --instance=postgres-dbase --password=some-password
-    ```
-    
-When deployed, your application uses the Cloud SQL Proxy that is built into the App Engine environment to communicate with your Cloud SQL instance. However, to test your application using your terminal shell, you must install a copy of the Cloud SQL Proxy in the development environment. To do this, open another Terminal and run the following:
+
+## Deploying the app to Cloud Run
+
+One last thing to make sure before you deploy to Cloud Run is to enable Cloud Run Admin. To do that, do the following step:
+1. In the Cloud Console, go to the Cloud Build Settings page.
+1. Open the Settings page
+1. Locate the row with the Cloud Run Admin role and set its Status to ENABLED.
+1. In the Additional steps may be required pop-up, click GRANT ACCESS TO ALL SERVICE ACCOUNTS.
+![](https://www.dropbox.com/s/dbdacdj1px8dh5g/cloud_run_admin_enable.png?raw=1)
+
+At this point, having committed all changes locally, you should be ready to push your repository to gcloud for deployment. Run the following command.
+
+```
+gcloud builds submit
+```
+
+Voila -- you have created and deployed your first Rails app!
+
+## Applying Database Migration using Cloud SQL
+
+Currently we put our database migrations into the `Dockerfile`. However, if you created new migrations, you also need to <code>rake db:migrate</code> to apply them on the Google Cloud. To do this, we will use the Cloud SQL Proxy to communicate with your Cloud SQL instance. However, to test your application using your terminal shell, you must install a copy of the Cloud SQL Proxy in the development environment. To do this, open another Terminal and run the following:
 ```
 cd
 wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
@@ -151,66 +303,28 @@ sudo chmod 0777 /cloudsql
 
 Now you can get the connection name by running the following command:
 ```
-gcloud sql instances describe postgres-dbase | grep connectionName 
+gcloud sql instances describe rotten-sql | grep connectionName 
 ```
-You should replace the name after `describe` to your SQL instance name which you created previously. You should see something like the following:
+You should replace the name after `describe` to your SQL instance name which you created previously, e.g. `rotten-sql`. You should see something like the following:
 ```
-connectionName: rottenpot:asia-southeast1:postgres-dbase
+connectionName: rottenpotatoes-323902:asia-southeast1:rotten-sql
 ```
 Now, you can run Cloud SQL Proxy.
 ```
-./cloud_sql_proxy -dir=/cloudsql -instances=rottenpot:asia-southeast1:postgres-dbase
+./cloud_sql_proxy -dir=/cloudsql -instances=rottenpotatoes-323902:asia-southeast1:rotten-sql
 ```
 You should see the following output:
 ```
-2021/03/23 08:09:48 Listening on /cloudsql/rottenpot:asia-southeast1:postgres-dbase/.s.PGSQL.5432 for rottenpot:asia-southeast1:postgres-dbase
+2021/03/23 08:09:48 Listening on /cloudsql/rottenpotatoes-323902:asia-southeast1:rotten-sql/.s.PGSQL.5432 for rottenpotatoes-323902:asia-southeast1:rotten-sql
 2021/03/23 08:09:48 Ready for new connections
 ```
 Leave the Terminal open and switch back to the other Terminal. 
 
-Now, we need to modify `config/database.yml`. In particular, you need to edit the `production` section of this file.
-```
-production:
-  adapter: postgresql
-  encoding: unicode
-  pool: 5
-  timeout: 5000
-  username: postgres
-  password: [your-password]
-  database: movies
-  host:   /cloudsql/[instance connection name]
-```
-You need to fill in the password and your instance connection name. You also need to add this connection name to your `app.yml` under the setting `cloud_sql_instances`. Your `app.yml` now should contain the following:
-
-```
-entrypoint: bundle exec rackup --port $PORT
-env: flex
-runtime: ruby
-
-env_variables:
-  SECRET_KEY_BASE: [SECRET_KEY]
-
-beta_settings:
-  cloud_sql_instances: [YOUR_INSTANCE_CONNECTION_NAME]
-```
-
 With this setup, we can do the migration in the Google Cloud App Engine. Run the following
 
 ```
-RAILS_ENV=production bundle exec rake db:create
 RAILS_ENV=production bundle exec rake db:migrate
 ```
-
-Now go verify that you can visit your app, but no movies are listed...
-```
-RAILS_ENV=production bundle exec rake db:seed
-```
-
-...and now your app should work on Google App Engine just as it does locally,
-with the seed data.
-
-Voila -- you have created and deployed your first Rails app!
-
 
 <details>
 <summary>
@@ -244,9 +358,8 @@ migrations, what must you do to _update_ the existing Google Cloud app?
 in a view, and see if you can deduce the sequence of steps.)
 </summary>
 <blockquote>
-Commit changes to Git, then <code>gcloud app deploy</code> to
-redeploy.  If you created new migrations, you also need to 
-<code>heroku run rake db:migrate</code> to apply them on the Heroku side.
+Commit changes to Git, then <code>gcloud builds submit</code> to
+redeploy.  
 </blockquote>
 </details>
 
@@ -258,6 +371,6 @@ redeploy.  If you created new migrations, you also need to
 
 ## References
 
-- [Rails on App Engine](https://cloud.google.com/ruby/rails/appengine)
-- [RAils using CloudSQL for PostgreSQL](https://cloud.google.com/ruby/rails/using-cloudsql-postgres)
+- [Rails on Cloud Run](https://cloud.google.com/ruby/rails/run)
+- [Rails using CloudSQL for PostgreSQL](https://cloud.google.com/ruby/rails/using-cloudsql-postgres)
 - [Cloud SQL Proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy)

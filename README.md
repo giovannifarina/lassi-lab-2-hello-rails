@@ -48,11 +48,11 @@ Platform-as-a-Service (PaaS) facility
 
 ## Homework Parts
 
-1. [Part 1: Set up to create a new app](Part1.md)
+1. [Part 1: Set up to create a new app](Part-1--Set-up-the-new-app-a5ed.md)
 
-2. [Part 2: Create the database and initial migration](Part2.md)
+2. [Part 2: Create the database and initial migration](Part-2--Create-the-database-and-initial-migration-c979.md)
 
-3. [Part 3: Create CRUD routes, actions, and views for Movies](Part3.md)
+3. [Part 3: Create CRUD routes, actions, and views for Movies](Part-3--Create-CRUD-routes--actions--and-views-for-Movies-2c5d.md)
 
-4. [Part 4: Deploy to the cloud, including production database](Part4.md)
+4. [Part 4: Deploy to the cloud, including production database](Part-4--Deploy-to-the-cloud--including-the-production-database-8bde.md)
 

@@ -1,6 +1,6 @@
 # Part 1: Set up the new app
 
-## Verify you have correct versions of Ruby, Rails, and Heroku CLI installed
+## Verify you have correct versions of Ruby, Rails, and Google Cloud SDK installed
 
 (If you're using Codio, these tools are already installed and you can
 skip this step.)
@@ -122,5 +122,5 @@ You should frequently commit your code from now on.
 
 
 <div align="center">
-<b><a href="Part2.md">Next: Part 2 &rarr;</a></b>
+<b><a href="Part-2--Create-the-database-and-initial-migration-c979.md">Next: Part 2 &rarr;</a></b>
 </div>
