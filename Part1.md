@@ -122,5 +122,5 @@ You should frequently commit your code from now on.
 
 
 <div align="center">
-<b><a href="Part-2--Create-the-database-and-initial-migration-c979.md">Next: Part 2 &rarr;</a></b>
+<b><a href="Part-2.md">Next: Part 2 &rarr;</a></b>
 </div>
