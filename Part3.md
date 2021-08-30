@@ -61,3 +61,8 @@ In the final part, we'll deploy the app to a production-quality PaaS (Platform a
         The browser is requesting the embedded image of the Rails logo for the welcome page.
     </blockquote>
 </details>
+
+<div align="center">
+<b><a href="Part4.md">Next: Part 4 &rarr;</a></b>
+</div>
+
