@@ -68,3 +68,9 @@ As a last step before continuing, you can now _seed_ the database with some movi
   (a) they inherit from <code>ActiveRecord::Base</code>.
 </blockquote>
 </details>
+
+
+<div align="center">
+<b><a href="Part3.md">Next: Part 3 &rarr;</a></b>
+</div>
+
