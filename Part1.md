@@ -1,10 +1,5 @@
 # Part 1: Set up the new app
-
-## Verify you have correct versions of Ruby, Rails, and Google Cloud SDK installed
-
-(If you're using Codio, these tools are already installed and you can
-skip this step.)
-
+<!---
 **NOTE:** These instructions assume you're using Ruby >=2.6.4 and
 <3.0.0 (2.6.0-2.6.3 do not work with `byebug`),
 and Rails 4.2.x.  **The assignment has not been tested with other
@@ -26,11 +21,13 @@ sudo apt-get install python3-distutils
 
 Finally, the `gcloud` [command line tool](https://cloud.google.com/sdk/docs/install) should be installed in your development
 eenvironment; say `gcloud -v` to verify this fact.  
+-->
 
 ## Create a new Rails app
 
-You  may find the Rails [online
+<!--- You  may find the Rails [online
 documentation](https://api.rubyonrails.org/v4) useful during this assignment.
+-->
 
 Now that you have Ruby and Rails installed, create a new, empty
 Rails app with the command: 
@@ -86,6 +83,7 @@ OK, now change into the directory of the app name you just created
 (probably `rottenpotatoes`) to continue...
 
 
+<!---
 ## Work around the SQLite3 gem bug in v1.4
 
 Rails uses the SQLite3 database as the default for development and testing.  
@@ -99,28 +97,30 @@ and change it to read as follows:
 
 Then run `bundle update` and verify that its output contains "Using sqlite3 1.3.x" 
 where x is any minor version.
-
+-->
 
 ## Check your work
 
 To make sure everything works, run the app locally.  (It doesn't do
 anything yet, but we can verify that it is running and reachable!)
 
-Follow [these instructions](Codio.md) to run and preview a Rails
-app locally -- the steps are a bit different depending on whether
-you're using Codio.
+```sh
+cd rottenpotatoes
+bin/rails server
+```
+Open http://127.0.0.1:3000/ on your browser
 
 When you visit the app's home page, you should see the generic Ruby on Rails landing page, 
 which is actually being served by your app.  Later we will define our own routes
 so that the "top level" page does not default to this banner.
 
-
+<!---
 ## Commit your work
 At this stage, everything is working and you should initialize a git repo in your app's folder and commit your app.
 Here is an [example `.gitignore` file for Rails on Github](https://github.com/github/gitignore/blob/master/Rails.gitignore).
 You should frequently commit your code from now on.
 
-
 <div align="center">
 <b><a href="Part2.md">Next: Part 2 &rarr;</a></b>
 </div>
+-->

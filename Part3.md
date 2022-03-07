@@ -1,6 +1,6 @@
 Try running the app again, and this time instead of visiting the home page try visiting `/movies`.  (That is: `/movies` should be the URI path, the part that immediately follows the hostname and/or port number in the URI.)
 
-Or, for that matter, visit `/turtle` or `/foobar` or any URI path at all; Rails will complain that your URI doesn't match any route, because we haven’t specified any routes mapping URIs to app methods. Try `rake routes` and verify that it informs us that there are no routes in our brand-new app. (You may want to open multiple Terminal windows or tabs so that the app can keep running while you try other commands.)
+Or, for that matter, visit `/turtle` or `/foobar` or any URI path at all; Rails will complain that your URI doesn't match any route, because we haven’t specified any routes mapping URIs to app methods. Try `rails routes` and verify that it informs us that there are no routes in our brand-new app. (You may want to open multiple Terminal windows or tabs so that the app can keep running while you try other commands.)
 
 More importantly, use an editor to open the file `log/development.log` and observe that the error message is logged there; this is where you look to find detailed error information when something goes wrong.  We'll show other problem-finding and debugging techniques later.
 
@@ -15,25 +15,22 @@ end
 ```
 
 
-Save the `routes.rb` file and run `rake routes` again, and observe that because of our change to `routes.rb`, the first line of output says that the URI `GET /movies` will try to call the `index` action of the `MoviesController`; this and most of the other routes in the table are the result of the line resources `:movies`, as we’ll soon see.  (As with many Rails methods, `resources 'movies'` would also work, but a symbol usually indicates one of a fixed set of choices rather than an arbitrary string.) The root route `'/'`, RottenPotatoes’ “home page,” will take us to the main Movie listings page by a mechanism we’ll soon see called a `URL redirection`.
+Save the `routes.rb` file and run `rails routes` again, and observe that because of our change to `routes.rb`, the first line of output says that the URI `GET /movies` will try to call the `index` action of the `MoviesController`; this and most of the other routes in the table are the result of the line resources `:movies`, as we’ll soon see.  (As with many Rails methods, `resources 'movies'` would also work, but a symbol usually indicates one of a fixed set of choices rather than an arbitrary string.) The root route `'/'`, RottenPotatoes’ “home page,” will take us to the main Movie listings page by a mechanism we’ll soon see called a `URL redirection`.
 
 (If you want more practice with how the routes.rb contents get parsed into routes, play around with the [Rails Routing Practice app](https://rails-routing-practice.herokuapp.com/) brought to you by ESaaS.)
 
 
 
-Using convention over configuration, Rails will expect this controller’s actions to be defined in the class `MoviesController`, and if that class isn’t defined at application start time, Rails will try to load it from the file `app/controllers/movies_controller.rb`. Sure enough, if you now reload the page `https://your-codiobox-3000.codio.io/movies` in your browser, you should see a different error: `uninitialized constant MoviesController`. This is good news: Rails is essentially complaining that it can’t find the `MoviesController` class, but the fact that it’s even looking for that class tells us that our route is working correctly! As before, this error message and additional information are captured in the log file `log/development.log`.
+Using convention over configuration, Rails will expect this controller’s actions to be defined in the class `MoviesController`, and if that class isn’t defined at application start time, Rails will try to load it from the file `app/controllers/movies_controller.rb`. Sure enough, if you now reload the page `https://localhost/movies` in your browser, you should see a different error: `uninitialized constant MoviesController`. This is good news: Rails is essentially complaining that it can’t find the `MoviesController` class, but the fact that it’s even looking for that class tells us that our route is working correctly! As before, this error message and additional information are captured in the log file `log/development.log`.
 
 To create both the controller file and associated views, we run the following command:
 ```
-rails g scaffold_controller Movie title rating description release_date --skip-test
+rails generate scaffold_controller Movie title rating description release_date --skip-test
 ```
 
 Notice the command above lists the model name (ie Movie) followed by the fields in movie records (ie title, rating, description and release date).
 
 The `rails g` / `rails generate` commands provide a number of useful methods that can auto-generate scaffolding for basic `CRUD+I` operations. You can check the list of all available commands on using `rails g --help`. Now you should have a working application even though the styling does not look too appealing. To make the page more appealing, you need to incorporate CSS. You will see this in later assignments.
-
-
-Now that the app is working, we would like to deploy it to production.
 
 ## Summary
 
@@ -51,6 +48,7 @@ You’ve used the following commands to set up a new Rails app:
 
 In the final part, we'll deploy the app to a production-quality PaaS (Platform as a Service) in the cloud, namely Heroku.
 
+<!---
 <details>
     <summary>
         Recall the generic Rails welcome page you saw when you first created the app. In the `development.log` file,
@@ -65,4 +63,5 @@ In the final part, we'll deploy the app to a production-quality PaaS (Platform a
 <div align="center">
 <b><a href="Part4.md">Next: Part 4 &rarr;</a></b>
 </div>
+-->
 
