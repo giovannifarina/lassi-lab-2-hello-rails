@@ -48,9 +48,10 @@ You’ve used the following commands to set up a new Rails app:
 
 5. Then, we took advantage of Rails's scaffolding to automatically generate (extremely simple) code for a controller and views that actually implement the CRUD+I RESTful actions.
 
+<!---
 In the final part, we'll deploy the app to a production-quality PaaS (Platform as a Service) in the cloud, namely Heroku.
 
-<!---
+
 <details>
     <summary>
         Recall the generic Rails welcome page you saw when you first created the app. In the `development.log` file,
