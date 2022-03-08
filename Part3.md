@@ -17,7 +17,9 @@ end
 
 Save the `routes.rb` file and run `rails routes` again, and observe that because of our change to `routes.rb`, the first line of output says that the URI `GET /movies` will try to call the `index` action of the `MoviesController`; this and most of the other routes in the table are the result of the line resources `:movies`, as we’ll soon see.  (As with many Rails methods, `resources 'movies'` would also work, but a symbol usually indicates one of a fixed set of choices rather than an arbitrary string.) The root route `'/'`, RottenPotatoes’ “home page,” will take us to the main Movie listings page by a mechanism we’ll soon see called a `URL redirection`.
 
+<!---
 (If you want more practice with how the routes.rb contents get parsed into routes, play around with the [Rails Routing Practice app](https://rails-routing-practice.herokuapp.com/) brought to you by ESaaS.)
+-->
 
 
 

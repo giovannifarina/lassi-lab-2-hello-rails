@@ -17,10 +17,12 @@ ratings of movies.
 
 After this assignment, you should know how to:
 
-1. Create a new Rails app from scratch, including making necessary
+1. Create a new Rails app from scratch 
+<!---
+, including making necessary
 adjustments to the `Gemfile` (specifying which libraries the app
 relies on) and immediately placing the app under version control so
-you can keep track of changes
+you can keep track of changes -->
 
 2. Set up a database to store the Rails models, by writing and
 executing an initial migration describing the database's schema

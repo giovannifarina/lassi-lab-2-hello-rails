@@ -119,8 +119,8 @@ so that the "top level" page does not default to this banner.
 At this stage, everything is working and you should initialize a git repo in your app's folder and commit your app.
 Here is an [example `.gitignore` file for Rails on Github](https://github.com/github/gitignore/blob/master/Rails.gitignore).
 You should frequently commit your code from now on.
+-->
 
 <div align="center">
 <b><a href="Part2.md">Next: Part 2 &rarr;</a></b>
 </div>
--->
