@@ -1,3 +1,4 @@
+# Part 2: Create the database and initial migration
 You wouldn't want to develop or test your app against the production database, as bugs in your code might accidentally damage valuable customer data. So Rails defines three _environments_ -- `production`, `development`, and `test`---each of which manages its own separate database. These environments, and the means for connecting to the database associated with each, are stored by Rails in  `config/database.yml`.
 
 The `test` database is entirely managed by the testing tools and should never be modified manually: it is wiped clean and repopulated at the beginning of every testing run.

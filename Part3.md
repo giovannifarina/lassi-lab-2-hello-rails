@@ -1,3 +1,4 @@
+# Part 3: Create CRUD routes, actions, and views for Movies
 Try running the app again, and this time instead of visiting the home page try visiting `/movies`.  (That is: `/movies` should be the URI path, the part that immediately follows the hostname and/or port number in the URI.)
 
 Or, for that matter, visit `/turtle` or `/foobar` or any URI path at all; Rails will complain that your URI doesn't match any route, because we haven’t specified any routes mapping URIs to app methods. Try `rails routes` and verify that it informs us that there are no routes in our brand-new app. (You may want to open multiple Terminal windows or tabs so that the app can keep running while you try other commands.)
