@@ -30,7 +30,10 @@ Recall that convention over configuration says that Rails expects the model name
 
 You can now verify that `Movie` is defined as a model by running `rails console`, which loads up your entire app into a REPL (read-eval-print loop) environment, and saying `Movie.new`.  You will get a brand new instance of `Movie` whose attribute values are all `nil`, and importantly, whose database primary key `id` is `nil` because it hasn't been saved to the database yet.  You can confirm the latter by saying `Movie.first`, which tries to fetch the very first movie in the database; you should get back `nil`.
 
-As a last step before continuing, you can now _seed_ the database with some movies to make the rest of the chapter more interesting. Copy [this code](https://gist.github.com/armandofox/056aae02801cf42a0199) into `db/seeds.rb` and once you have a sense of what it does, run `rake db:seed` to run it.  Now once again try `Movie.first` and verify that there are movies in the database.  In fact, using the [ActiveRecord Basics CHIPS](https://github.com/saasbook/hw-activerecord-intro) as inspiration, try a few simple queries on movies from the Rails console.
+As a last step before continuing, you can now _seed_ the database with some movies to make the rest of the chapter more interesting. Copy [this code](https://gist.github.com/armandofox/056aae02801cf42a0199) into `db/seeds.rb` and once you have a sense of what it does, run `rake db:seed` to run it.  Now once again try `Movie.first` and verify that there are movies in the database.  
+<!---
+In fact, using the [ActiveRecord Basics CHIPS](https://github.com/saasbook/hw-activerecord-practice) as inspiration, try a few simple queries on movies from the Rails console.
+-->
 
 
 ## Summary
@@ -56,18 +59,6 @@ As a last step before continuing, you can now _seed_ the database with some movi
 * `rake db:migrate` applies  only those migrations not already applied to the development database. The method for applying migrations to a production database depends on the deployment environment.
 
 *  `rake db:seed` runs the `db/seeds.rb` file, which can optionally contain some initial data to put into the database.
-
-
-<details>
-<summary>
- Do Rails models acquire the methods <code>where</code> and <code>find</code> via (a)
- inheritance or (b) mix-in?  (Hint: check the <code>movie.rb</code> file.)
-
-</summary>
-<blockquote>
-  (a) they inherit from <code>ActiveRecord::Base</code>.
-</blockquote>
-</details>
 
 
 <div align="center">
